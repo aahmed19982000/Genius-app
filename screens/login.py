@@ -36,7 +36,7 @@ def login_screen(page: ft.Page):
     error_text = ft.Text("", color="#FF4D4D", size=13, text_align=ft.TextAlign.CENTER)
     loading    = ft.ProgressRing(width=22, height=22, color="white", stroke_width=2, visible=False)
 
-    def handle_login(e):
+    async def handle_login(e):
         error_text.value   = ""
         loading.visible    = True
         login_btn.disabled = True
@@ -45,13 +45,17 @@ def login_screen(page: ft.Page):
         uname  = username_field.value.strip()
         pword  = password_field.value.strip()
 
-        result = api.login(uname, pword)
+        # ✅ شغّل الـ blocking call في thread منفصل
+        import asyncio
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, lambda: api.login(uname, pword)
+        )
 
         loading.visible    = False
         login_btn.disabled = False
 
         if result["success"]:
-            page.run_task(page.push_route, "/dashboard")
+            await page.push_route("/dashboard")
         else:
             error_text.value = result["message"]
         page.update()

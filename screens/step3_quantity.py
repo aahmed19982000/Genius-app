@@ -10,6 +10,13 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
     sheets_text = ft.Text(str(sheets_count["value"]), size=18, weight=ft.FontWeight.BOLD, color="#1a237e")
     copies_text = ft.Text(str(copies_count["value"]), size=18, weight=ft.FontWeight.BOLD, color="#1a237e")
 
+    price_per_sheet = float(order_data.get("price_per_sheet", 0.0))
+    delivery_cost   = 15.00
+
+    printing_cost_text = ft.Text("", size=14, color="#222222", weight=ft.FontWeight.BOLD)
+    tax_text           = ft.Text("", size=14, color="#222222", weight=ft.FontWeight.BOLD)
+    total_text         = ft.Text("", size=20, color="white", weight=ft.FontWeight.BOLD)
+
     address_field = ft.TextField(
         hint_text="أدخل العنوان بالتفصيل (الحي، الشارع، رقم المبنى)",
         hint_style=ft.TextStyle(color="#aaaaaa", size=13),
@@ -18,7 +25,6 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
         bgcolor="white",
         color="#222222",
         text_align=ft.TextAlign.RIGHT,
-        prefix_icon="location_on",
         multiline=False,
         value=order_data.get("address", ""),
         content_padding=ft.Padding(12, 14, 12, 14),
@@ -39,163 +45,169 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
         content_padding=ft.Padding(12, 14, 12, 14),
     )
 
+    def update_totals():
+        printing_cost = price_per_sheet * sheets_count["value"] * copies_count["value"]
+        tax   = round((printing_cost + delivery_cost) * 0.15, 2)
+        total = printing_cost + delivery_cost + tax
+        printing_cost_text.value = f"{printing_cost:.2f} ر.س"
+        tax_text.value           = f"{tax:.2f} ر.س"
+        total_text.value         = f"{total:.2f} ر.س"
+        page.update()  # ✅ page.update() مباشرة بدون try/except
+
     def update_sheets(delta):
         sheets_count["value"] = max(1, sheets_count["value"] + delta)
         sheets_text.value = str(sheets_count["value"])
-        page.update()
+        update_totals()  # ✅ بيستدعي update_totals اللي بتستدعي page.update()
 
     def update_copies(delta):
         copies_count["value"] = max(1, copies_count["value"] + delta)
         copies_text.value = str(copies_count["value"])
-        page.update()
-
-    def counter_row(label, icon, count_text, on_dec, on_inc):
+        update_totals()  # ✅ نفس الشيء
+    # ✅ عداد بدون أيقونات — نص فقط لتجنب مشكلة الأيقونات الرمادية
+    def counter_row(label, count_text, on_dec, on_inc):
         return ft.Container(
+            height=100,
             content=ft.Column([
                 ft.Row([
-                    ft.Icon(icon, size=18, color="#555555"),
                     ft.Text(label, size=14, color="#555555", weight=ft.FontWeight.W_500),
-                ], alignment=ft.MainAxisAlignment.END, spacing=8),
+                ], alignment=ft.MainAxisAlignment.END),
                 ft.Container(height=10),
                 ft.Row([
                     ft.Container(
-                        content=ft.Icon("add", color="white", size=20),
+                        content=ft.Text("+", size=24, color="white", weight=ft.FontWeight.BOLD),
                         width=44, height=44, border_radius=10,
                         bgcolor="#1a237e", alignment=ft.Alignment(0, 0),
-                        on_click=lambda e: on_inc(),
-                        ink=True,
+                        on_click=lambda e: on_inc(), ink=True,
                     ),
-                    ft.Container(expand=True, content=count_text, alignment=ft.Alignment(0, 0)),
                     ft.Container(
-                        content=ft.Icon("remove", color="#1a237e", size=20),
+                        content=count_text,
+                        alignment=ft.Alignment(0, 0),
+                        width=100, height=44,
+                    ),
+                    ft.Container(
+                        content=ft.Text("−", size=24, color="#1a237e", weight=ft.FontWeight.BOLD),
                         width=44, height=44, border_radius=10,
                         bgcolor="#e8eaf0", alignment=ft.Alignment(0, 0),
-                        on_click=lambda e: on_dec(),
-                        ink=True,
+                        on_click=lambda e: on_dec(), ink=True,
                     ),
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            ], spacing=0),
-            bgcolor="white",
+            ], spacing=0, tight=True),
+            bgcolor="#f0f2f8",
             border_radius=14,
             padding=ft.Padding(16, 16, 16, 16),
             border=ft.border.all(1, "#e8eaf0"),
         )
 
-    # حساب التكلفة
-    printing_cost = 24.00
-    delivery_cost = 15.00
-    tax = round((printing_cost + delivery_cost) * 0.15, 2)
-    total = printing_cost + delivery_cost + tax
+    update_totals()
 
     summary_box = ft.Container(
+        height=260,
         content=ft.Column([
             ft.Row([
-                ft.Text(f"{printing_cost:.2f} ر.س", size=14, color="#222222", weight=ft.FontWeight.BOLD),
-                ft.Text("تكلفة الطباعة", size=14, color="#555555"),
+                printing_cost_text,
+                ft.Text("تكلفة الطباعة", size=14, color="#aaaaff"),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Container(height=8),
             ft.Row([
-                ft.Text(f"{delivery_cost:.2f} ر.س", size=14, color="#222222", weight=ft.FontWeight.BOLD),
-                ft.Text("رسوم التوصيل", size=14, color="#555555"),
+                ft.Text(f"{delivery_cost:.2f} ر.س", size=14, color="white", weight=ft.FontWeight.BOLD),
+                ft.Text("رسوم التوصيل", size=14, color="#aaaaff"),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Container(height=8),
             ft.Row([
-                ft.Text(f"{tax:.2f} ر.س", size=14, color="#222222", weight=ft.FontWeight.BOLD),
-                ft.Text("الضريبة (15%)", size=14, color="#555555"),
+                tax_text,
+                ft.Text("الضريبة (15%)", size=14, color="#aaaaff"),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Divider(color="#ffffff33", height=20),
             ft.Row([
-                ft.Text(f"{total:.2f} ر.س", size=20, color="white", weight=ft.FontWeight.BOLD),
+                total_text,
                 ft.Text("الإجمالي", size=16, color="white", weight=ft.FontWeight.BOLD),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Container(height=12),
             ft.Container(
-                content=ft.Row([
-                    ft.Icon("info_outline", color="#aaaaff", size=16),
-                    ft.Text(
-                        "سيتم مراجعة الطلب من قبل فريقنا قبل الطباعة لضمان أعلى جودة\nسيصلك الشعار عند بدء التنفيذ.",
-                        size=11, color="#ccccff", text_align=ft.TextAlign.RIGHT,
-                    ),
-                ], spacing=8, alignment=ft.MainAxisAlignment.END),
+                height=70,
+                content=ft.Text(
+                    "سيتم مراجعة الطلب من قبل فريقنا قبل الطباعة لضمان أعلى جودة",
+                    size=11, color="#ccccff", text_align=ft.TextAlign.RIGHT,
+                ),
                 bgcolor="#ffffff11",
                 border_radius=10,
                 padding=ft.Padding(12, 10, 12, 10),
             ),
-        ], spacing=0),
+        ], spacing=0, tight=True),
         bgcolor="#1a237e",
         border_radius=16,
         padding=ft.Padding(16, 20, 16, 20),
     )
 
+    # ✅ إصلاح زر متابعة الدفع — on_next مش async هنا
     def handle_next(e):
         if not address_field.value or not address_field.value.strip():
             page.snack_bar = ft.SnackBar(ft.Text("يرجى إدخال عنوان التوصيل"), bgcolor="#FF4D4D")
             page.snack_bar.open = True
             page.update()
             return
-        order_data["number_of_sheets"] = sheets_count["value"]
-        order_data["quantity"] = copies_count["value"]
-        order_data["address"] = address_field.value.strip()
-        order_data["notes"] = notes_field.value.strip()
-        order_data["printing_cost"] = printing_cost
-        order_data["delivery_cost"] = delivery_cost
-        order_data["tax"] = tax
-        order_data["total"] = total
-        on_next(order_data)
+        printing_cost = price_per_sheet * sheets_count["value"] * copies_count["value"]
+        tax   = round((printing_cost + delivery_cost) * 0.15, 2)
+        total = printing_cost + delivery_cost + tax
+        order_data.update({
+            "number_of_sheets": sheets_count["value"],
+            "quantity":         copies_count["value"],
+            "address":          address_field.value.strip(),
+            "notes":            notes_field.value.strip() if notes_field.value else "",
+            "printing_cost":    printing_cost,
+            "delivery_cost":    delivery_cost,
+            "tax":              tax,
+            "total":            total,
+        })
+        # ✅ on_next هي go_step4 وهي async — نستخدم run_task
+        page.run_task(on_next, order_data)
 
     stepper = _build_stepper(current=3)
 
     next_btn = ft.Container(
         content=ft.Text("متابعة للدفع  ←", size=16, weight=ft.FontWeight.BOLD,
                         color="white", text_align=ft.TextAlign.CENTER),
-        bgcolor="#1a237e",
-        border_radius=14,
-        height=54,
-        alignment=ft.Alignment(0, 0),
-        on_click=handle_next,
-        ink=True,
+        bgcolor="#1a237e", border_radius=14, height=54,
+        alignment=ft.Alignment(0, 0), expand=True,
+        on_click=handle_next, ink=True,
     )
 
     back_btn = ft.Container(
-        content=ft.Row([
-            ft.Icon("arrow_forward", color="#1a237e", size=18),
-            ft.Text("رجوع", size=14, color="#1a237e", weight=ft.FontWeight.BOLD),
-        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6),
+        content=ft.Text("رجوع", size=14, color="#1a237e", weight=ft.FontWeight.BOLD),
         border=ft.border.all(1.5, "#1a237e"),
-        border_radius=14,
-        height=54,
-        alignment=ft.Alignment(0, 0),
-        on_click=lambda e: on_back(),
-        ink=True,
+        border_radius=14, height=54,
+        alignment=ft.Alignment(0, 0), expand=True,
+        on_click=lambda e: on_back(), ink=True,
     )
 
     return ft.View(
         route="/step3",
         controls=[
-            ft.Column([
-                stepper,
-                ft.Container(
-                    expand=True,
-                    padding=ft.Padding(16, 16, 16, 16),
-                    content=ft.Column(
+            ft.Column(
+                controls=[
+                    stepper,
+                    ft.Column(
+                        expand=True,
                         scroll=ft.ScrollMode.AUTO,
                         spacing=0,
                         controls=[
                             ft.Container(
                                 content=ft.Column([
-                                    ft.Text("تفاصيل الكمية والعنوان", size=18,
-                                            weight=ft.FontWeight.BOLD, color="#1a237e",
-                                            text_align=ft.TextAlign.CENTER),
+                                    ft.Text(
+                                        "تفاصيل الكمية والعنوان",
+                                        size=18, weight=ft.FontWeight.BOLD,
+                                        color="#1a237e", text_align=ft.TextAlign.CENTER,
+                                    ),
                                     ft.Container(height=18),
                                     counter_row(
-                                        "عدد الصفحات (لكل نسخة)", "description",
+                                        "عدد الصفحات (لكل نسخة)",
                                         sheets_text,
                                         lambda: update_sheets(-1),
                                         lambda: update_sheets(1),
                                     ),
                                     ft.Container(height=12),
                                     counter_row(
-                                        "عدد النسخ المطلوبة", "content_copy",
+                                        "عدد النسخ المطلوبة",
                                         copies_text,
                                         lambda: update_copies(-1),
                                         lambda: update_copies(1),
@@ -211,20 +223,16 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                                             address_field,
                                             ft.Container(height=10),
                                             ft.Container(
-                                                content=ft.Row([
-                                                    ft.Icon("map", color="#1a237e", size=18),
-                                                    ft.Text("تحديد من الخريطة", size=13,
-                                                            color="#1a237e", weight=ft.FontWeight.BOLD),
-                                                ], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
-                                                bgcolor="#e8eaf0",
-                                                border_radius=10,
-                                                height=44,
-                                                alignment=ft.Alignment(0, 0),
-                                                ink=True,
+                                                content=ft.Text(
+                                                    "تحديد من الخريطة", size=13,
+                                                    color="#1a237e", weight=ft.FontWeight.BOLD,
+                                                    text_align=ft.TextAlign.CENTER,
+                                                ),
+                                                bgcolor="#e8eaf0", border_radius=10,
+                                                height=44, alignment=ft.Alignment(0, 0), ink=True,
                                             ),
-                                        ], spacing=0),
-                                        bgcolor="white",
-                                        border_radius=14,
+                                        ], spacing=0, tight=True),
+                                        bgcolor="#f0f2f8", border_radius=14,
                                         padding=ft.Padding(16, 16, 16, 16),
                                         border=ft.border.all(1, "#e8eaf0"),
                                     ),
@@ -237,33 +245,38 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                                             ], alignment=ft.MainAxisAlignment.END),
                                             ft.Container(height=8),
                                             notes_field,
-                                        ], spacing=0),
-                                        bgcolor="white",
-                                        border_radius=14,
+                                        ], spacing=0, tight=True),
+                                        bgcolor="#f0f2f8", border_radius=14,
                                         padding=ft.Padding(16, 16, 16, 16),
                                         border=ft.border.all(1, "#e8eaf0"),
                                     ),
                                     ft.Container(height=16),
                                     summary_box,
-                                ], spacing=0),
-                                bgcolor="#f0f2f8",
+                                    ft.Container(height=16),
+                                ], spacing=0, tight=True),
+                                bgcolor="white",
                                 border_radius=16,
-                                padding=ft.Padding(0, 0, 0, 0),
+                                padding=20,
+                                margin=ft.Margin(16, 16, 16, 0),
                             ),
+                            ft.Container(height=16),
                         ],
                     ),
-                ),
-                ft.Container(
-                    content=ft.Row([
-                        ft.Container(expand=True, content=back_btn),
-                        ft.Container(width=12),
-                        ft.Container(expand=True, content=next_btn),
-                    ], spacing=0),
-                    padding=ft.Padding(16, 12, 16, 12),
-                    bgcolor="white",
-                    border=ft.border.only(top=ft.BorderSide(1, "#e8eaf0")),
-                ),
-            ], spacing=0, expand=True),
+                    ft.Container(
+                        height=78,
+                        content=ft.Row([
+                            back_btn,
+                            ft.Container(width=12),
+                            next_btn,
+                        ], spacing=0),
+                        padding=ft.Padding(16, 12, 16, 12),
+                        bgcolor="white",
+                        border=ft.border.only(top=ft.BorderSide(1, "#e8eaf0")),
+                    ),
+                ],
+                spacing=0,
+                expand=True,
+            ),
         ],
         navigation_bar=bottom_navbar(page, current_index=1),
         bgcolor="#f0f2f8",
@@ -272,16 +285,11 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
 
 
 def _build_stepper(current: int):
-    steps = [
-        ("1", "رفع الملف"),
-        ("2", "الخيارات"),
-        ("3", "الكمية"),
-        ("4", "الدفع"),
-    ]
+    steps = [("1", "رفع الملف"), ("2", "الخيارات"), ("3", "الكمية"), ("4", "الدفع")]
     items = []
     for i, (num, label) in enumerate(steps):
         is_active = (i + 1) == current
-        is_done = (i + 1) < current
+        is_done   = (i + 1) < current
 
         if is_done:
             circle = ft.Container(

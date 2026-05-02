@@ -21,20 +21,19 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
     if not printing_sides:
         printing_sides = [{"value": "single", "label": "وجه واحد"}]
 
-    paper_type_map  = {str(item["id"]): item for item in paper_types}
-    paper_size_map  = {str(item["id"]): item for item in paper_sizes}
-    paper_color_map = {str(item["id"]): item for item in paper_colors}
-    side_labels     = {str(item["value"]): item["label"] for item in printing_sides}
+    paper_type_map  = {str(i): item for i, item in enumerate(paper_types)}
+    paper_size_map  = {str(i): item for i, item in enumerate(paper_sizes)}
+    paper_color_map = {str(i): item for i, item in enumerate(paper_colors)}
+    side_labels     = {str(i): item["label"] for i, item in enumerate(printing_sides)}
 
     paper_type_labels  = {k: v["paper_type"] for k, v in paper_type_map.items()}
     paper_size_labels  = {k: v["size"] for k, v in paper_size_map.items()}
     paper_color_labels = {k: v["color_paper"] for k, v in paper_color_map.items()}
 
-    selected_size  = {"value": str(paper_sizes[0]["id"])}
-    selected_type  = {"value": str(paper_types[0]["id"])}
-    selected_color = {"value": str(paper_colors[0]["id"])}
-    selected_sides = {"value": str(printing_sides[0]["value"])}
-    selected_bind  = {"value": "spiral"}
+    selected_size  = {"value": "0"}
+    selected_type  = {"value": "0"}
+    selected_color = {"value": "0"}
+    selected_sides = {"value": "0"}
     copies_count   = {"value": 1}
 
     # ✅ احسب عدد الصفحات من الباك اند
@@ -63,13 +62,30 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         color_price = float(paper_color_map.get(selected_color["value"], {}).get("price", 0))
 
         price_per_sheet = size_price + type_price + color_price
-        total = price_per_sheet * PAGE_COUNT * copies_count["value"]
+        
+        side_label = side_labels.get(selected_sides["value"], "")
+        is_double_sided = "وجهين" in side_label or "double" in str(selected_sides["value"]).lower()
+        if is_double_sided:
+            price_per_sheet *= 1.5
+            number_of_sheets = (PAGE_COUNT + 1) // 2
+        else:
+            number_of_sheets = PAGE_COUNT
+
+        total = price_per_sheet * number_of_sheets * copies_count["value"]
 
         subtotal_text.value = f"{total:.2f} ر.س"
+        multiplier_str = " × 1.5 (وجهين)" if is_double_sided else ""
         price_detail_text.value = (
-            f"({size_price:.2f} مقاس + {type_price:.2f} نوع + {color_price:.2f} لون) × {PAGE_COUNT} ورقة"
+            f"({size_price:.2f} مقاس + {type_price:.2f} نوع + {color_price:.2f} لون){multiplier_str} × {number_of_sheets} ورقة"
         )
-        page.update()
+        
+        try:
+            if subtotal_text.page:
+                subtotal_text.update()
+            if price_detail_text.page:
+                price_detail_text.update()
+        except Exception:
+            pass
 
     update_price()
 
@@ -106,26 +122,31 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             btn.border  = ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd")
             for col in btn.content.controls:
                 col.color = "white" if is_sel else ("#555555" if col.size == 14 else "#aaaaaa")
+            try:
+                if btn.page:
+                    btn.update()
+            except Exception:
+                pass
         update_price()
 
     size_row = ft.Row([
-        make_size_btn(str(item["id"]), item["size"], item["price"])
-        for item in paper_sizes
+        make_size_btn(str(i), item["size"], item["price"])
+        for i, item in enumerate(paper_sizes)
     ], spacing=8, wrap=False)
 
     # ── Paper type dropdown ────────────────────────────────
     def on_type_change(e):
-        selected_type["value"] = paper_type_dd.value
+        selected_type["value"] = e.control.value
         update_price()
 
     paper_type_dd = ft.Dropdown(
-        value=str(paper_types[0]["id"]),
+        value="0",
         options=[
             ft.dropdown.Option(
-                key=str(item["id"]),
+                key=str(i),
                 text=f"{item['paper_type']} ({float(item['price']):.2f} ر.س)"
             )
-            for item in paper_types
+            for i, item in enumerate(paper_types)
         ],
         border_radius=10,
         bgcolor="white",
@@ -162,6 +183,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             border=ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
             border_radius=12,
             padding=ft.Padding(12, 12, 12, 12),
+            expand=True,
             on_click=lambda e, k=key: on_select(k),
             ink=True,
         )
@@ -177,6 +199,11 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             dot.border  = ft.border.all(2, "#1a237e" if is_sel else "#dddddd")
             dot.bgcolor = "#1a237e" if is_sel else "transparent"
             dot.content = ft.Icon("circle", size=8, color="white") if is_sel else None
+            try:
+                if btn.page:
+                    btn.update()
+            except Exception:
+                pass
         update_price()
 
     def select_sides(key):
@@ -188,64 +215,34 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             dot.border  = ft.border.all(2, "#1a237e" if is_sel else "#dddddd")
             dot.bgcolor = "#1a237e" if is_sel else "transparent"
             dot.content = ft.Icon("circle", size=8, color="white") if is_sel else None
+            try:
+                if btn.page:
+                    btn.update()
+            except Exception:
+                pass
         update_price()
 
     color_grid = ft.Row([
         radio_card(
-            str(item["id"]),
+            str(i),
             "palette" if ("لون" in item["color_paper"] or "color" in item["color_paper"].lower()) else "contrast",
             f"{item['color_paper']} ({float(item['price']):.2f} ر.س)",
             "اختيار لون الطباعة",
             selected_color, color_cards, select_color,
         )
-        for item in paper_colors
-    ], spacing=10, wrap=True)
+        for i, item in enumerate(paper_colors)
+    ], spacing=10, wrap=False)
 
     sides_grid = ft.Row([
         radio_card(
-            str(item["value"]),
+            str(i),
             "import_contacts" if ("وجهين" in item["label"] or "double" in str(item["value"]).lower()) else "menu_book",
             item["label"],
             "اختيار وجه الطباعة",
             selected_sides, sides_cards, select_sides,
         )
-        for item in printing_sides
-    ], spacing=10, wrap=True)
-
-    # ── Binding ────────────────────────────────────────────
-    bind_btns: dict[str, ft.Container] = {}
-
-    def make_bind_btn(key, label):
-        is_sel = selected_bind["value"] == key
-        c = ft.Container(
-            height=44,
-            content=ft.Text(label, size=13, weight=ft.FontWeight.BOLD,
-                            color="white" if is_sel else "#555555"),
-            border=ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
-            border_radius=10,
-            bgcolor="#1a237e" if is_sel else "white",
-            padding=ft.Padding(14, 10, 14, 10),
-            alignment=ft.Alignment(0, 0),
-            on_click=lambda e, k=key: select_bind(k),
-            ink=True,
-        )
-        bind_btns[key] = c
-        return c
-
-    def select_bind(key):
-        selected_bind["value"] = key
-        for k, btn in bind_btns.items():
-            is_sel = k == key
-            btn.bgcolor = "#1a237e" if is_sel else "white"
-            btn.border  = ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd")
-            btn.content.color = "white" if is_sel else "#555555"
-        page.update()
-
-    bind_row = ft.Row([
-        make_bind_btn("none",   "بدون تجليد"),
-        make_bind_btn("spiral", "تغليف حلزوني"),
-        make_bind_btn("staple", "تدبيس"),
-    ], spacing=8, wrap=True)
+        for i, item in enumerate(printing_sides)
+    ], spacing=10, wrap=False)
 
     # ── Copies counter ─────────────────────────────────────
     def decrement(e):
@@ -253,11 +250,21 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             copies_count["value"] -= 1
             copies_val_txt.value = str(copies_count["value"])
             update_price()
+            try:
+                if copies_val_txt.page:
+                    copies_val_txt.update()
+            except Exception:
+                pass
 
     def increment(e):
         copies_count["value"] += 1
         copies_val_txt.value = str(copies_count["value"])
         update_price()
+        try:
+            if copies_val_txt.page:
+                copies_val_txt.update()
+        except Exception:
+            pass
 
     counter = ft.Container(
         height=56,
@@ -287,21 +294,28 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         type_price  = float(paper_type_map.get(selected_type["value"], {}).get("price", 0))
         color_price = float(paper_color_map.get(selected_color["value"], {}).get("price", 0))
         price_per_sheet = size_price + type_price + color_price
+        
+        side_label = side_labels.get(selected_sides["value"], "")
+        is_double_sided = "وجهين" in side_label or "double" in str(selected_sides["value"]).lower()
+        if is_double_sided:
+            price_per_sheet *= 1.5
+            number_of_sheets = (PAGE_COUNT + 1) // 2
+        else:
+            number_of_sheets = PAGE_COUNT
 
-        on_next({
-            "paper_size_id":    selected_size["value"],
-            "paper_type_id":    selected_type["value"],
-            "color_id":         selected_color["value"],
-            "sides":            selected_sides["value"],
+        page.run_task(on_next, {
+            "paper_size_id":    paper_size_map.get(selected_size["value"], {}).get("id", ""),
+            "paper_type_id":    paper_type_map.get(selected_type["value"], {}).get("id", ""),
+            "color_id":         paper_color_map.get(selected_color["value"], {}).get("id", ""),
+            "sides":            printing_sides[int(selected_sides["value"])].get("value", "") if selected_sides["value"].isdigit() else "",
             "paper_size_label": paper_size_labels.get(selected_size["value"], ""),
             "paper_type_label": paper_type_labels.get(selected_type["value"], ""),
             "color_label":      paper_color_labels.get(selected_color["value"], ""),
-            "sides_label":      side_labels.get(selected_sides["value"], ""),
-            "binding":          selected_bind["value"],
-            "finishing_label":  _binding_label(selected_bind["value"]),
+            "sides_label":      side_label,
             "copies":           copies_count["value"],
             "file":             file_info,
             "price_per_sheet":  price_per_sheet,
+            "number_of_sheets": number_of_sheets,
             "pages":            PAGE_COUNT,
         })
 
@@ -369,6 +383,11 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             ]),
 
             _card([
+                _section_title("🎨", "لون الطباعة"),
+                color_grid,
+            ]),
+
+            _card([
                 _section_title("📄", "وجه الطباعة"),
                 sides_grid,
             ]),
@@ -392,6 +411,8 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                             border=ft.border.all(1.5, "#dddddd"),
                             border_radius=14,
                             padding=ft.Padding(16, 13, 16, 13),
+                            alignment=ft.Alignment(0, 0),
+                            expand=True,
                             on_click=lambda e: on_back(),
                             ink=True,
                         ),
@@ -401,8 +422,8 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                             bgcolor="#1a237e",
                             border_radius=14,
                             padding=ft.Padding(30, 13, 30, 13),
-                            expand=True,
                             alignment=ft.Alignment(0, 0),
+                            expand=True,
                             on_click=handle_next,
                             ink=True,
                         ),
@@ -430,16 +451,6 @@ def _card(controls):
 
 def _section_title(icon_char, label):
     return ft.Text(f"{icon_char}  {label}", size=17, weight=ft.FontWeight.BOLD, color="#222222")
-
-
-def _binding_label(value):
-    labels = {
-        "none":      "بدون تجليد",
-        "spiral":    "تغليف حلزوني",
-        "staple":    "تدبيس",
-        "hardcover": "غلاف صلب",
-    }
-    return labels.get(value, value)
 
 
 def _price_row(label, value_str=None, value_control=None):
