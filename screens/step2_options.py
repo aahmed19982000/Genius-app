@@ -44,7 +44,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
     print(f"DEBUG: PAGE_COUNT = {PAGE_COUNT}")
 
     subtotal_text = ft.Text(
-        "0.00 ر.س",
+        "0.00 جنيه",
         size=13, weight=ft.FontWeight.BOLD, color="#1a237e",
     )
     price_detail_text = ft.Text(
@@ -73,7 +73,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
 
         total = price_per_sheet * number_of_sheets * copies_count["value"]
 
-        subtotal_text.value = f"{total:.2f} ر.س"
+        subtotal_text.value = f"{total:.2f} جنيه"
         multiplier_str = " × 1.5 (وجهين)" if is_double_sided else ""
         price_detail_text.value = (
             f"({size_price:.2f} مقاس + {type_price:.2f} نوع + {color_price:.2f} لون){multiplier_str} × {number_of_sheets} ورقة"
@@ -99,7 +99,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             content=ft.Column([
                 ft.Text(title, size=14, weight=ft.FontWeight.BOLD,
                         color="white" if is_sel else "#555555"),
-                ft.Text(f"{float(price):.2f} ر.س", size=10,
+                ft.Text(f"{float(price):.2f} جنيه", size=10,
                         color="white" if is_sel else "#aaaaaa"),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=2),
             border=ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
@@ -144,7 +144,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         options=[
             ft.dropdown.Option(
                 key=str(i),
-                text=f"{item['paper_type']} ({float(item['price']):.2f} ر.س)"
+                text=f"{item['paper_type']} ({float(item['price']):.2f} جنيه)"
             )
             for i, item in enumerate(paper_types)
         ],
@@ -226,7 +226,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         radio_card(
             str(i),
             "palette" if ("لون" in item["color_paper"] or "color" in item["color_paper"].lower()) else "contrast",
-            f"{item['color_paper']} ({float(item['price']):.2f} ر.س)",
+            f"{item['color_paper']} ({float(item['price']):.2f} جنيه)",
             "اختيار لون الطباعة",
             selected_color, color_cards, select_color,
         )

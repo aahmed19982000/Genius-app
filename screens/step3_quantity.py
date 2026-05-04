@@ -11,10 +11,8 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
     copies_text = ft.Text(str(copies_count["value"]), size=18, weight=ft.FontWeight.BOLD, color="#1a237e")
 
     price_per_sheet = float(order_data.get("price_per_sheet", 0.0))
-    delivery_cost   = 15.00
 
     printing_cost_text = ft.Text("", size=14, color="#222222", weight=ft.FontWeight.BOLD)
-    tax_text           = ft.Text("", size=14, color="#222222", weight=ft.FontWeight.BOLD)
     total_text         = ft.Text("", size=20, color="white", weight=ft.FontWeight.BOLD)
 
     address_field = ft.TextField(
@@ -47,23 +45,20 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
 
     def update_totals():
         printing_cost = price_per_sheet * sheets_count["value"] * copies_count["value"]
-        tax   = round((printing_cost + delivery_cost) * 0.15, 2)
-        total = printing_cost + delivery_cost + tax
-        printing_cost_text.value = f"{printing_cost:.2f} ر.س"
-        tax_text.value           = f"{tax:.2f} ر.س"
-        total_text.value         = f"{total:.2f} ر.س"
-        page.update()  # ✅ page.update() مباشرة بدون try/except
+        printing_cost_text.value = f"{printing_cost:.2f} جنيه"
+        total_text.value         = f"{printing_cost:.2f} جنيه"
+        page.update()
 
     def update_sheets(delta):
         sheets_count["value"] = max(1, sheets_count["value"] + delta)
         sheets_text.value = str(sheets_count["value"])
-        update_totals()  # ✅ بيستدعي update_totals اللي بتستدعي page.update()
+        update_totals()
 
     def update_copies(delta):
         copies_count["value"] = max(1, copies_count["value"] + delta)
         copies_text.value = str(copies_count["value"])
-        update_totals()  # ✅ نفس الشيء
-    # ✅ عداد بدون أيقونات — نص فقط لتجنب مشكلة الأيقونات الرمادية
+        update_totals()
+
     def counter_row(label, count_text, on_dec, on_inc):
         return ft.Container(
             height=100,
@@ -101,21 +96,11 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
     update_totals()
 
     summary_box = ft.Container(
-        height=260,
+        height=170,
         content=ft.Column([
             ft.Row([
                 printing_cost_text,
                 ft.Text("تكلفة الطباعة", size=14, color="#aaaaff"),
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            ft.Container(height=8),
-            ft.Row([
-                ft.Text(f"{delivery_cost:.2f} ر.س", size=14, color="white", weight=ft.FontWeight.BOLD),
-                ft.Text("رسوم التوصيل", size=14, color="#aaaaff"),
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            ft.Container(height=8),
-            ft.Row([
-                tax_text,
-                ft.Text("الضريبة (15%)", size=14, color="#aaaaff"),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Divider(color="#ffffff33", height=20),
             ft.Row([
@@ -124,7 +109,6 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Container(height=12),
             ft.Container(
-                height=70,
                 content=ft.Text(
                     "سيتم مراجعة الطلب من قبل فريقنا قبل الطباعة لضمان أعلى جودة",
                     size=11, color="#ccccff", text_align=ft.TextAlign.RIGHT,
@@ -139,27 +123,26 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
         padding=ft.Padding(16, 20, 16, 20),
     )
 
-    # ✅ إصلاح زر متابعة الدفع — on_next مش async هنا
     def handle_next(e):
+        print("DEBUG: handle_next اتضغط")
+        print("DEBUG: address =", address_field.value)
+        
         if not address_field.value or not address_field.value.strip():
             page.snack_bar = ft.SnackBar(ft.Text("يرجى إدخال عنوان التوصيل"), bgcolor="#FF4D4D")
             page.snack_bar.open = True
             page.update()
             return
+        
         printing_cost = price_per_sheet * sheets_count["value"] * copies_count["value"]
-        tax   = round((printing_cost + delivery_cost) * 0.15, 2)
-        total = printing_cost + delivery_cost + tax
         order_data.update({
             "number_of_sheets": sheets_count["value"],
             "quantity":         copies_count["value"],
             "address":          address_field.value.strip(),
             "notes":            notes_field.value.strip() if notes_field.value else "",
             "printing_cost":    printing_cost,
-            "delivery_cost":    delivery_cost,
-            "tax":              tax,
-            "total":            total,
+            "total":            printing_cost,
         })
-        # ✅ on_next هي go_step4 وهي async — نستخدم run_task
+        print("DEBUG: order_data قبل go_step4 =", order_data)
         page.run_task(on_next, order_data)
 
     stepper = _build_stepper(current=3)
@@ -197,13 +180,6 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                                         "تفاصيل الكمية والعنوان",
                                         size=18, weight=ft.FontWeight.BOLD,
                                         color="#1a237e", text_align=ft.TextAlign.CENTER,
-                                    ),
-                                    ft.Container(height=18),
-                                    counter_row(
-                                        "عدد الصفحات (لكل نسخة)",
-                                        sheets_text,
-                                        lambda: update_sheets(-1),
-                                        lambda: update_sheets(1),
                                     ),
                                     ft.Container(height=12),
                                     counter_row(

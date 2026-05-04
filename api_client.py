@@ -59,13 +59,15 @@ class APIClient:
         except Exception as e:
             return {"success": False, "message": f"تعذر الاتصال: {str(e)}"}
 
-    def create_order(self, file_path, paper_type_id, paper_size_id,
-                     printing_color_id, printing_sides,
-                     number_of_sheets, quantity, address, notes=""):
-        try:
-            with open(file_path, 'rb') as f:
-                with httpx.Client(timeout=30) as client:
-                    response = client.post(
+    async def create_order(self, file_path, paper_type_id, paper_size_id,
+                        printing_color_id, printing_sides,
+                        number_of_sheets, quantity, address, notes=""):
+            try:
+                with open(file_path, 'rb') as f:
+                    file_bytes = f.read()
+                
+                async with httpx.AsyncClient(timeout=30) as client:
+                    response = await client.post(
                         f"{self.ORDERS_URL}/create/",
                         headers={"Authorization": f"Bearer {self.access_token}"},
                         data={
@@ -78,15 +80,15 @@ class APIClient:
                             'address': address,
                             'notes': notes,
                         },
-                        files={'file_name': (file_path.split('/')[-1], f)},
+                        files={'file_name': (file_path.split('/')[-1], file_bytes)},
                     )
-            if response.status_code == 201:
-                return {"success": True, "data": response.json()}
-            errors = response.json()
-            msg = list(errors.values())[0][0] if errors else "فشل إنشاء الطلب"
-            return {"success": False, "message": msg}
-        except Exception as e:
-            return {"success": False, "message": f"تعذر الاتصال: {str(e)}"}
+                if response.status_code == 201:
+                    return {"success": True, "data": response.json()}
+                errors = response.json()
+                msg = list(errors.values())[0][0] if errors else "فشل إنشاء الطلب"
+                return {"success": False, "message": msg}
+            except Exception as e:
+                return {"success": False, "message": f"تعذر الاتصال: {str(e)}"}
 
     def get_my_orders(self):
         try:

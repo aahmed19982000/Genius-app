@@ -25,7 +25,19 @@ def my_orders_screen(page: ft.Page):
         loading.visible = False
 
         if result["success"]:
-            orders = result["data"]
+            data = result["data"]
+
+            # ✅ استخرج الـ list صح بغض النظر عن شكل الـ response
+            if isinstance(data, list):
+                orders = data
+            elif isinstance(data, dict):
+                orders = data.get("results") or data.get("orders") or data.get("data") or []
+            else:
+                orders = []
+
+            # ✅ فلتر أي عنصر مش dict
+            orders = [o for o in orders if isinstance(o, dict)]
+
             if not orders:
                 orders_list.controls.append(
                     ft.Container(
@@ -46,7 +58,8 @@ def my_orders_screen(page: ft.Page):
                         content=ft.Column([
                             ft.Row([
                                 ft.Container(
-                                    content=ft.Text(status_val, size=11, color="white", weight=ft.FontWeight.BOLD),
+                                    content=ft.Text(status_val, size=11, color="white",
+                                                    weight=ft.FontWeight.BOLD),
                                     bgcolor=status_color,
                                     border_radius=8,
                                     padding=ft.padding.symmetric(horizontal=10, vertical=4),
@@ -55,17 +68,19 @@ def my_orders_screen(page: ft.Page):
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             ft.Container(height=8),
                             ft.Text(
-                                order.get("file_name", "").split("/")[-1],
+                                str(order.get("file_name", "")).split("/")[-1],
                                 size=14, color="white", weight=ft.FontWeight.W_500,
                             ),
                             ft.Container(height=4),
                             ft.Row([
                                 ft.Text("التكلفة:", size=12, color="#AAAACC"),
-                                ft.Text(f"{order.get('total_cost', 0)} ج.م", size=12, color="#6C63FF", weight=ft.FontWeight.BOLD),
+                                ft.Text(f"{order.get('total_cost', 0)} ج.م", size=12,
+                                        color="#6C63FF", weight=ft.FontWeight.BOLD),
                             ], spacing=6),
                             ft.Row([
                                 ft.Text("التاريخ:", size=12, color="#AAAACC"),
-                                ft.Text(order.get("created_at", "")[:10], size=12, color="#AAAACC"),
+                                ft.Text(str(order.get("created_at", ""))[:10],
+                                        size=12, color="#AAAACC"),
                             ], spacing=6),
                         ], spacing=4),
                         bgcolor="#1E1E2E",
