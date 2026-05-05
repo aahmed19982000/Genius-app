@@ -254,7 +254,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                 expand=True,
             ),
         ],
-        navigation_bar=bottom_navbar(page, current_index=1),
+        navigation_bar=bottom_navbar(page, current_index=2),
         bgcolor="#f0f2f8",
         padding=0,
     )

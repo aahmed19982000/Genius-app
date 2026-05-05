@@ -91,11 +91,11 @@ def profile_screen(page: ft.Page):
 
                         ft.Text("تصميم وتطوير / أحمد إبراهيم © 2026",
                                 size=11, color="#444455", text_align=ft.TextAlign.CENTER),
+                        bottom_navbar(page, current_index=4),
                     ],
                 ),
             )
         ],
-        navigation_bar=bottom_navbar(page, current_index=3),
         bgcolor="#0F0F1A",
         padding=0,
     )

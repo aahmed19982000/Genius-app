@@ -281,12 +281,11 @@ def step1_upload_screen(page: ft.Page, on_next):
     services=[file_picker],
     controls=[
         ft.Column(
-            [stepper, scrollable_content],
+            [stepper, scrollable_content, bottom_navbar(page, current_index=2)],
             spacing=0,
             expand=True,
         ),
     ],
-    navigation_bar=bottom_navbar(page, current_index=2),  # ← هنا
     bgcolor="#f0f2f8",
     padding=0,
 )

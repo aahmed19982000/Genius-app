@@ -308,10 +308,10 @@ def home_screen(page: ft.Page, on_print_now, username: str = ""):
                             ],
                         ),
                     ),
+                    bottom_navbar(page, current_index=0),
                 ],
                 expand=True,
                 spacing=0,
             )
         ],
-        navigation_bar=bottom_navbar(page, current_index=0),
     )

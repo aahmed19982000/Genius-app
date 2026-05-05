@@ -121,11 +121,11 @@ def my_orders_screen(page: ft.Page):
                         error_text,
                         orders_list,
                         ft.Container(height=32),
+                        bottom_navbar(page, current_index=1),
                     ],
                 ),
             )
         ],
-        navigation_bar=bottom_navbar(page, current_index=2),
         bgcolor="#0F0F1A",
         padding=0,
     )

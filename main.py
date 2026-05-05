@@ -174,25 +174,19 @@ def dashboard_view(page: ft.Page):
                             ft.Container(height=20),
                         ],
                     ),
+                    bottom_navbar(page, current_index=0),
                 ],
                 spacing=0,
                 expand=True,
             ),
         ],
-        navigation_bar=bottom_navbar(page, current_index=0),
     )
 
 
 def main(page: ft.Page):
     page.title = "اطبعلي - نظام الإدارة"
     page.window.icon = "assets/icon.png"
-    page.theme = ft.Theme(
-        color_scheme=ft.ColorScheme(
-            surface_container_highest=ft.Colors.WHITE, # لون خلفية النافبار في Material 3
-            surface_tint=ft.Colors.TRANSPARENT,        # منع أي تظليل ملون
-        ),
-        visual_density=ft.VisualDensity.STANDARD,
-    )
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.rtl = True
     page.bgcolor = "#F5F7FA"
     page.padding = 0
@@ -298,4 +292,3 @@ def main(page: ft.Page):
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
-    ft.run(main)
