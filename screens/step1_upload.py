@@ -219,19 +219,15 @@ def step1_upload_screen(page: ft.Page, on_next):
         services=[file_picker],
         controls=[
             ft.Column(
-                [
-                    stepper,
-                    scrollable_content,
-                ],
+                [stepper, scrollable_content],
                 spacing=0,
                 expand=True,
             ),
         ],
-        navigation_bar=bottom_navbar(page, current_index=1),
+        navigation_bar=bottom_navbar(page, current_index=2),  # ← هنا
         bgcolor="#f0f2f8",
         padding=0,
     )
-
 
 def _build_stepper(current: int):
     steps = [
