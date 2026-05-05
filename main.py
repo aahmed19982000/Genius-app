@@ -2,6 +2,7 @@ import flet as ft
 from api_client import api
 from screens.login import login_screen
 from screens.signup import signup_screen
+from screens.home import home_screen
 from screens.my_orders import my_orders_screen
 from screens.profile import profile_screen
 from screens.step1_upload import step1_upload_screen
@@ -184,13 +185,21 @@ def dashboard_view(page: ft.Page):
 
 def main(page: ft.Page):
     page.title = "اطبعلي - نظام الإدارة"
-    page.theme_mode = ft.ThemeMode.LIGHT
+    page.window.icon = "assets/icon.png"
+    page.theme = ft.Theme(
+        color_scheme=ft.ColorScheme(
+            surface_container_highest=ft.Colors.WHITE, # لون خلفية النافبار في Material 3
+            surface_tint=ft.Colors.TRANSPARENT,        # منع أي تظليل ملون
+        ),
+        visual_density=ft.VisualDensity.STANDARD,
+    )
     page.rtl = True
     page.bgcolor = "#F5F7FA"
     page.padding = 0
     page.window.width = 390
     page.window.height = 844
     page.window.resizable = False
+
 
     order_draft = {}
 
@@ -222,8 +231,13 @@ def main(page: ft.Page):
         elif route == "/signup":
             page.views.append(signup_screen(page))
 
-        elif route == "/dashboard":
-            page.views.append(dashboard_view(page))
+        elif route in ("/home", "/dashboard"):
+            username = api.user_data.get("username", "أحمد") if api.user_data else "أحمد"
+            page.views.append(home_screen(
+                page,
+                on_print_now=lambda e: page.run_task(go_step1),
+                username=username,
+            ))
 
         elif route in ("/new-order", "/step1"):
             page.views.append(step1_upload_screen(page, on_next=go_step2))
@@ -283,4 +297,5 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
     ft.run(main)

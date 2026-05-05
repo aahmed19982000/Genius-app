@@ -3,23 +3,73 @@ from components.navbar import bottom_navbar
 
 
 def step1_upload_screen(page: ft.Page, on_next):
+    # مسارات الصور المخصصة بناءً على ملفاتك
+    ICONS_PATH = {
+        "pdf": "img/step1_upload/pdf.png",
+        "png": "img/step1_upload/png.png",
+        "default": "img/step1_upload/file.png"
+    }
+
     selected_file = {"path": None, "name": None}
 
+    # 1. تعريف العناصر كمتغيرات مستقلة ليتم تحديثها لاحقاً
     file_text = ft.Text(
         "لا توجد ملفات مختارة حتى الآن",
         color="#888888",
         size=13,
         text_align=ft.TextAlign.CENTER,
     )
+    
     file_count_text = ft.Text("0 ملفات", color="#888888", size=12)
+
+    # أيقونة افتراضية تظهر فقط عندما لا يوجد ملف
+    default_icon = ft.Icon("description", size=40, color="#cccccc")
+
+    empty_files_box = ft.Container(
+        height=120,
+        content=ft.Column(
+            [
+                default_icon,
+                ft.Container(height=5),
+                # هذا النص هو الذي سيعرض اسم الملف المرفوع
+                file_text, 
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=0,
+        ),
+        border=ft.border.all(1, "#e8eaf0"),
+        border_radius=12,
+        bgcolor="#f8f9ff", # لون خلفية خفيف جداً لتمييز منطقة العرض
+        padding=20,
+        alignment=ft.Alignment(0, 0),
+    )
+
+    # عنصر الصورة الذي سيتغير شكله عند اختيار ملف
+    preview_icon = ft.Image(
+        src=ICONS_PATH["default"], 
+        width=48, 
+        height=48, 
+        fit="contain"
+    )
 
     def set_selected_file(file):
         if file:
             selected_file["path"] = file.path
             selected_file["name"] = file.name
+            
+            # تحديث نص اسم الملف المختار
             file_text.value = file.name
-            file_text.color = "#222222"
+            file_text.color = "#1a237e"  # لون غامق وواضح
+            file_text.weight = ft.FontWeight.BOLD
+            file_text.size = 15
+            
+            # تحديث عداد الملفات
             file_count_text.value = "1 ملف"
+            
+            # إخفاء الأيقونة الرمادية إذا أردت (اختياري)
+            default_icon.visible = False 
+            
             page.update()
 
     async def pick_file(e):
@@ -28,15 +78,12 @@ def step1_upload_screen(page: ft.Page, on_next):
             file_type=ft.FilePickerFileType.CUSTOM,
             allowed_extensions=["pdf", "docx", "jpg", "jpeg", "png"],
         )
-        print(f"DEBUG: result = {result}")
-        # ✅ result هي list مباشرة
         if result and len(result) > 0:
             set_selected_file(result[0])
-    # ✅ FilePicker بدون on_result — النتيجة تجي من await مباشرة
+
     file_picker = ft.FilePicker()
 
     def handle_next(e):
-        print(f"DEBUG: selected_file = {selected_file}")
         if not selected_file["path"]:
             page.snack_bar = ft.SnackBar(
                 ft.Text("يرجى اختيار ملف أولاً"),
@@ -45,15 +92,20 @@ def step1_upload_screen(page: ft.Page, on_next):
             page.snack_bar.open = True
             page.update()
             return
-        print(f"DEBUG: calling on_next with {selected_file}")
         page.run_task(on_next, selected_file)
 
     upload_zone = ft.Container(
-        height=200,
+        height=220,  # زيادة الطول قليلاً لاستيعاب الصورة
         content=ft.Column(
             [
+                # استبدال ft.Icon بـ ft.Image لاستخدام الصورة من المجلد الموضح في الصورة "Screenshot 2026-05-05 at 6.54.35 PM.jpg"
                 ft.Container(
-                    content=ft.Icon("cloud_upload", size=40, color="#1a237e"),
+                    content=ft.Image(
+                        src="img/step1_upload/file.png", # المسار بناءً على هيكل ملفاتك
+                        width=50,
+                        height=50,
+                        fit="contain"
+                    ),
                     width=80,
                     height=80,
                     bgcolor="#e8eaf0",
@@ -84,6 +136,7 @@ def step1_upload_screen(page: ft.Page, on_next):
         padding=ft.Padding(20, 30, 20, 30),
         on_click=pick_file,
         ink=True,
+        # إضافة تأثير حركي بسيط عند المرور بالماوس (اختياري)
     )
 
     empty_files_box = ft.Container(
@@ -103,12 +156,19 @@ def step1_upload_screen(page: ft.Page, on_next):
         alignment=ft.Alignment(0, 0),
     )
 
-    def make_type_btn(icon, label):
+    def make_type_btn(img_name, label):
+        # img_name: مرر اسم الصورة فقط (مثل "pdf" أو "png") بدون اللاحقة
         return ft.Container(
             height=42,
             content=ft.Row(
                 [
-                    ft.Icon(icon, size=16, color="#555555"),
+                    # استدعاء الصورة من المسار الصحيح بناءً على ملفاتك
+                    ft.Image(
+                        src=f"img/step1_upload/{img_name}.png", 
+                        width=20, 
+                        height=20,
+                        fit="contain" # نص مباشر لتجنب AttributeError
+                    ),
                     ft.Text(
                         label,
                         size=12,
@@ -126,7 +186,6 @@ def step1_upload_screen(page: ft.Page, on_next):
             on_click=pick_file,
             ink=True,
         )
-
     stepper = _build_stepper(current=1)
 
     next_btn = ft.Container(
@@ -168,7 +227,8 @@ def step1_upload_screen(page: ft.Page, on_next):
                             text_align=ft.TextAlign.CENTER,
                         ),
                         ft.Container(height=18),
-                        upload_zone,
+                        # منطقة الرفع التي عدلناها سابقاً لتستخدم صورة file.png
+                        upload_zone, 
                         ft.Container(height=14),
                         ft.Row(
                             [
@@ -183,13 +243,15 @@ def step1_upload_screen(page: ft.Page, on_next):
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         ),
                         ft.Container(height=8),
-                        empty_files_box,
+                        # الصندوق الذي يعرض اسم الملف المختار مع صورته
+                        empty_files_box, 
                         ft.Container(height=14),
                         ft.Row(
                             [
-                                make_type_btn("image", "JPG / PNG"),
-                                make_type_btn("article", "DOCX"),
-                                make_type_btn("picture_as_pdf", "PDF"),
+                                # استدعاء الأزرار بأسماء الصور الفعلية في المجلد (png.png, file.png, pdf.png)
+                                make_type_btn("png", "JPG / PNG"),
+                                make_type_btn("file", "DOCX"),
+                                make_type_btn("pdf", "PDF"),
                             ],
                             spacing=10,
                         ),
@@ -215,19 +277,19 @@ def step1_upload_screen(page: ft.Page, on_next):
 
     # ✅ file_picker في services داخل View
     return ft.View(
-        route="/step1",
-        services=[file_picker],
-        controls=[
-            ft.Column(
-                [stepper, scrollable_content],
-                spacing=0,
-                expand=True,
-            ),
-        ],
-        navigation_bar=bottom_navbar(page, current_index=2),  # ← هنا
-        bgcolor="#f0f2f8",
-        padding=0,
-    )
+    route="/step1",
+    services=[file_picker],
+    controls=[
+        ft.Column(
+            [stepper, scrollable_content],
+            spacing=0,
+            expand=True,
+        ),
+    ],
+    navigation_bar=bottom_navbar(page, current_index=2),  # ← هنا
+    bgcolor="#f0f2f8",
+    padding=0,
+)
 
 def _build_stepper(current: int):
     steps = [

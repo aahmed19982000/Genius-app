@@ -1,18 +1,18 @@
 import flet as ft
 
-
 def bottom_navbar(page: ft.Page, current_index: int = 0):
-
     def on_change(e):
         index = e.control.selected_index
-        routes = ["/dashboard", "/my-orders", "/step1", "/saved", "/profile"]
-        page.run_task(page.push_route, routes[index])
+        routes = ["/home", "/my-orders", "/step1", "/saved", "/profile"]
+        page.go(routes[index])
 
-    return ft.NavigationBar(
+    # ننشئ النافبار شفافة تماماً
+    nav_bar = ft.NavigationBar(
         selected_index=current_index,
         on_change=on_change,
-        bgcolor="white",
-        indicator_color="transparent",
+        bgcolor=ft.Colors.TRANSPARENT, # شفافة
+        elevation=0,
+        indicator_color="#E8EEFF",
         label_behavior=ft.NavigationBarLabelBehavior.ALWAYS_SHOW,
         destinations=[
             ft.NavigationBarDestination(
@@ -41,4 +41,12 @@ def bottom_navbar(page: ft.Page, current_index: int = 0):
                 label="الحساب",
             ),
         ],
+    )
+
+    # نغلفها في Container أبيض لكسر أي لون رمادي يفرضه النظام
+    return ft.Container(
+        content=nav_bar,
+        bgcolor="white",
+        padding=ft.Padding(0, 0, 0, 0),
+        border=ft.Border(top=ft.BorderSide(1, "#f0f0f0")), # اختياري: خط رفيع جداً للفصل
     )

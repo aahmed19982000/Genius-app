@@ -1,88 +1,207 @@
 import flet as ft
+
 from components.navbar import bottom_navbar
 
 
+BLUE = "#2F67E8"
+TEXT = "#101828"
+MUTED = "#8A94A6"
+LINE = "#EEF1F5"
+
+
+def _round_icon(icon_name: str, on_click=None):
+    return ft.Container(
+        content=ft.Icon(icon_name, size=23, color="#172033"),
+        width=48,
+        height=48,
+        bgcolor="#F5F7FA",
+        border=ft.border.all(1, "#E9EDF3"),
+        border_radius=24,
+        alignment=ft.Alignment(0, 0),
+        shadow=ft.BoxShadow(
+            blur_radius=8,
+            color="#0000000D",
+            offset=ft.Offset(0, 2),
+        ),
+        ink=True,
+        on_click=on_click,
+    )
+
+
+def _printer_illustration():
+    return ft.Stack(
+        width=315,
+        height=265,
+        controls=[
+            ft.Container(
+                left=45,
+                top=216,
+                width=225,
+                height=18,
+                border_radius=40,
+                gradient=ft.RadialGradient(
+                    center=ft.Alignment(0, 0),
+                    radius=1.0,
+                    colors=["#00000026", "#00000000"],
+                ),
+            ),
+            ft.Container(
+                left=98,
+                top=30,
+                width=120,
+                height=78,
+                bgcolor="#454545",
+                border=ft.border.all(1, "#2A2A2A"),
+                shadow=ft.BoxShadow(
+                    blur_radius=14,
+                    color="#0000001A",
+                    offset=ft.Offset(0, 5),
+                ),
+            ),
+            ft.Container(
+                left=42,
+                top=92,
+                width=232,
+                height=115,
+                border_radius=14,
+                bgcolor="#474747",
+                border=ft.border.all(1, "#2C2C2C"),
+                shadow=ft.BoxShadow(
+                    blur_radius=16,
+                    color="#00000035",
+                    offset=ft.Offset(0, 10),
+                ),
+            ),
+            ft.Container(
+                left=82,
+                top=92,
+                width=150,
+                height=38,
+                border_radius=ft.BorderRadius(0, 0, 8, 8),
+                bgcolor="#4A4A4A",
+                border=ft.border.only(
+                    left=ft.BorderSide(1, "#222222"),
+                    right=ft.BorderSide(1, "#222222"),
+                    bottom=ft.BorderSide(1, "#222222"),
+                ),
+            ),
+            ft.Container(
+                left=90,
+                top=166,
+                width=138,
+                height=52,
+                border_radius=9,
+                bgcolor="#1F1F1F",
+                border=ft.border.all(1, "#101010"),
+            ),
+            ft.Container(
+                left=76,
+                top=188,
+                width=168,
+                height=48,
+                border_radius=8,
+                bgcolor="#111111",
+                border=ft.border.all(1, "#0B0B0B"),
+            ),
+            ft.Container(
+                left=88,
+                top=196,
+                width=144,
+                height=24,
+                border_radius=4,
+                gradient=ft.LinearGradient(
+                    begin=ft.Alignment(0, -1),
+                    end=ft.Alignment(0, 1),
+                    colors=["#3A3A3A", "#101010"],
+                ),
+            ),
+            ft.Container(
+                left=76,
+                top=227,
+                width=168,
+                height=10,
+                border_radius=6,
+                bgcolor="#595959",
+            ),
+            ft.Container(
+                left=42,
+                top=92,
+                width=232,
+                height=30,
+                border_radius=ft.BorderRadius(14, 14, 0, 0),
+                gradient=ft.LinearGradient(
+                    begin=ft.Alignment(0, -1),
+                    end=ft.Alignment(0, 1),
+                    colors=["#6F6F6F", "#444444"],
+                ),
+            ),
+            ft.Container(
+                left=145,
+                top=150,
+                width=24,
+                height=18,
+                content=ft.Icon(ft.Icons.FINGERPRINT, size=16, color="#5C5C5C"),
+                alignment=ft.Alignment(0, 0),
+            ),
+        ],
+    )
+
+
 def home_screen(page: ft.Page, on_print_now, username: str = ""):
-    # ── Top Bar ────────────────────────────────────────────────────────
-    top_bar = ft.Container(
+    display_name = username or "أحمد"
+
+    status_bar = ft.Container(
+        height=42,
         bgcolor="white",
-        padding=ft.Padding(16, 12, 16, 12),
+        padding=ft.padding.only(left=28, right=28, top=8),
         content=ft.Row(
             [
-                # Left: icon buttons
+                
                 ft.Row(
-                    [
-                        ft.Container(
-                            content=ft.Icon(
-                                ft.Icons.NOTIFICATIONS_OUTLINED,
-                                size=20,
-                                color="#374151",
-                            ),
-                            width=40,
-                            height=40,
-                            bgcolor="#F3F4F6",
-                            border_radius=20,
-                            alignment=ft.Alignment(0, 0),
-                        ),
-                        ft.Container(
-                            content=ft.Icon(
-                                ft.Icons.PERSON_OUTLINED,
-                                size=20,
-                                color="#374151",
-                            ),
-                            width=40,
-                            height=40,
-                            bgcolor="#F3F4F6",
-                            border_radius=20,
-                            alignment=ft.Alignment(0, 0),
-                        ),
-                    ],
-                    spacing=8,
-                ),
-                # Right: location
-                ft.Row(
-                    [
-                        ft.Text(
-                            "مجمع الملك فهد...",
-                            size=13,
-                            color="#111827",
-                            weight=ft.FontWeight.W_500,
-                            rtl=True,
-                        ),
-                        ft.Icon(
-                            ft.Icons.LOCATION_ON_OUTLINED,
-                            size=14,
-                            color="#2563EB",
-                        ),
-                        ft.Text(
-                            "توصيل إلى",
-                            size=13,
-                            color="#2563EB",
-                            weight=ft.FontWeight.BOLD,
-                            rtl=True,
-                        ),
-                    ],
-                    spacing=3,
+                    
+                    spacing=7,
                 ),
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         ),
     )
 
-    # ── Greeting ───────────────────────────────────────────────────────
+    top_bar = ft.Container(
+        bgcolor="white",
+        padding=ft.padding.symmetric(horizontal=22, vertical=12),
+        content=ft.Row(
+            [
+                ft.Row(
+                    [
+                        _round_icon(ft.Icons.PERSON_OUTLINED, lambda e: page.run_task(page.push_route, "/profile")),
+                        _round_icon(ft.Icons.NOTIFICATIONS_OUTLINED),
+                    ],
+                    spacing=12,
+                ),
+                ft.Row(
+                    [
+                    
+                    ],
+                    spacing=4,
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        ),
+    )
+
     greeting = ft.Container(
         bgcolor="white",
-        padding=ft.Padding(16, 12, 16, 20),
+        padding=ft.padding.only(left=24, right=24, top=24, bottom=20),
         content=ft.Column(
             [
                 ft.Row(
                     [
                         ft.Text("👋", size=30),
                         ft.Text(
-                            f"مرحباً {username}" if username else "مرحباً",
-                            size=26,
+                            f"مرحباً {display_name}",
+                            size=27,
                             weight=ft.FontWeight.BOLD,
-                            color="#111827",
+                            color=TEXT,
                             rtl=True,
                         ),
                     ],
@@ -91,8 +210,8 @@ def home_screen(page: ft.Page, on_print_now, username: str = ""):
                 ),
                 ft.Text(
                     "ماذا تود أن تطبع اليوم؟",
-                    size=14,
-                    color="#6B7280",
+                    size=16,
+                    color=MUTED,
                     text_align=ft.TextAlign.CENTER,
                     rtl=True,
                 ),
@@ -102,75 +221,63 @@ def home_screen(page: ft.Page, on_print_now, username: str = ""):
         ),
     )
 
-    # ── Main Card ──────────────────────────────────────────────────────
-    main_card = ft.Container(
+    hero_card = ft.Container(
         bgcolor="white",
-        border_radius=20,
-        margin=ft.Margin(16, 0, 16, 16),
-        padding=ft.Padding(0, 0, 0, 24),
+        border_radius=22,
+        margin=ft.margin.symmetric(horizontal=24),
+        padding=ft.padding.only(left=22, right=22, top=30, bottom=28),
         shadow=ft.BoxShadow(
-            spread_radius=0,
-            blur_radius=16,
-            color=ft.Colors.with_opacity(0.08, ft.Colors.BLACK),
+            blur_radius=18,
+            color="#00000012",
             offset=ft.Offset(0, 4),
         ),
+        border=ft.border.all(1, LINE),
         content=ft.Column(
             [
-                # Printer image area (light grey bg, no border)
                 ft.Container(
-                    height=240,
-                    bgcolor="#F3F4F6",
-                    border_radius=ft.BorderRadius(20, 20, 0, 0),
+                    height=280,
                     alignment=ft.Alignment(0, 0),
-                    content=ft.Icon(
-                        ft.Icons.PRINT,
-                        size=120,
-                        color="#9CA3AF",
-                    ),
+                    content=_printer_illustration(),
                 ),
-
-                ft.Container(height=20),
-
-                # Card title
                 ft.Text(
                     "اطبع مستنداتك بكل سهولة",
-                    size=22,
+                    size=25,
                     weight=ft.FontWeight.BOLD,
-                    color="#111827",
+                    color=TEXT,
                     text_align=ft.TextAlign.CENTER,
                     rtl=True,
                 ),
-
-                ft.Container(height=10),
-
-                # Card subtitle
+                ft.Container(height=6),
                 ft.Text(
                     "ارفع ملفاتك، اختر نوع الورق، واستلمها\nعند باب منزلك بكل سهولة",
-                    size=13,
-                    color="#6B7280",
+                    size=16,
+                    color=MUTED,
                     text_align=ft.TextAlign.CENTER,
                     rtl=True,
+                    height=1.45,
                 ),
-
-                ft.Container(height=20),
-
-                # CTA Button
+                ft.Container(height=24),
                 ft.Container(
-                    margin=ft.Margin(20, 0, 20, 0),
-                    height=54,
+                    height=62,
+                    width=float("inf"),
+                    bgcolor=BLUE,
+                    border_radius=14,
+                    alignment=ft.Alignment(0, 0),
                     content=ft.Text(
                         "اطبع الآن",
-                        size=17,
+                        size=23,
                         weight=ft.FontWeight.BOLD,
                         color="white",
                         text_align=ft.TextAlign.CENTER,
                         rtl=True,
                     ),
-                    bgcolor="#2563EB",
-                    border_radius=14,
-                    alignment=ft.Alignment(0, 0),
-                    on_click=on_print_now,
+                    shadow=ft.BoxShadow(
+                        blur_radius=8,
+                        color="#2F67E840",
+                        offset=ft.Offset(0, 3),
+                    ),
                     ink=True,
+                    on_click=on_print_now,
                 ),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -178,29 +285,33 @@ def home_screen(page: ft.Page, on_print_now, username: str = ""):
         ),
     )
 
-    # ── Scrollable body ────────────────────────────────────────────────
-    body = ft.ListView(
-        expand=True,
-        spacing=0,
-        padding=ft.Padding(0, 0, 0, 20),
-        controls=[
-            ft.Container(bgcolor="white", height=1),  # separator
-            greeting,
-            ft.Container(height=4, bgcolor="#F9FAFB"),
-            main_card,
-        ],
-    )
-
     return ft.View(
         route="/home",
+        bgcolor="#FFFFFF",
+        padding=0,
         controls=[
             ft.Column(
-                [top_bar, body],
-                spacing=0,
+                [
+                    status_bar,
+                    top_bar,
+                    ft.Container(
+                        expand=True,
+                        bgcolor="#FFFFFF",
+                        content=ft.ListView(
+                            expand=True,
+                            padding=ft.padding.only(top=0, bottom=24),
+                            spacing=0,
+                            controls=[
+                                greeting,
+                                hero_card,
+                                ft.Container(height=16),
+                            ],
+                        ),
+                    ),
+                ],
                 expand=True,
-            ),
+                spacing=0,
+            )
         ],
         navigation_bar=bottom_navbar(page, current_index=0),
-        bgcolor="#F9FAFB",
-        padding=0,
     )

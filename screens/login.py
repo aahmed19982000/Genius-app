@@ -61,7 +61,7 @@ def login_screen(page: ft.Page):
         login_btn.disabled = False
 
         if result["success"]:
-            await page.push_route("/step1")
+            await page.push_route("/home")
         else:
             error_text.value = result["message"]
         page.update()
