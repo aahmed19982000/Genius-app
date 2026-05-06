@@ -158,68 +158,71 @@ def my_orders_screen(page: ft.Page):
                                 else ft.Icons.KEYBOARD_ARROW_DOWN)
             page.update()
 
-        # ── Action button ──
+        # ── Action buttons ──
+        track_btn_primary = ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Icon(ft.Icons.LOCATION_SEARCHING, color="white", size=16),
+                    ft.Text("تتبع الطلب", size=13, color="white", weight=ft.FontWeight.BOLD),
+                ],
+                spacing=6, alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            expand=True, height=42, bgcolor="#2563EB",
+            border_radius=12, alignment=ft.Alignment(0, 0), ink=True,
+            on_click=lambda e, oid=order.get("id"), oname=customer_name, ostatus=status_val, odate=created_at, ocost=total_cost: page.run_task(page.push_route, f"/track/{oid}?name={oname}&status={ostatus}&date={odate}&cost={ocost}"),
+        )
+        
+        track_btn_icon = ft.Container(
+            content=ft.Icon(ft.Icons.LOCATION_SEARCHING, color="#2563EB", size=18),
+            width=42, height=42, bgcolor="#EFF6FF", border_radius=12,
+            alignment=ft.Alignment(0, 0), ink=True,
+            on_click=lambda e, oid=order.get("id"), oname=customer_name, ostatus=status_val, odate=created_at, ocost=total_cost: page.run_task(page.push_route, f"/track/{oid}?name={oname}&status={ostatus}&date={odate}&cost={ocost}"),
+        )
+
+        chat_btn_icon = ft.Container(
+            content=ft.Icon(ft.Icons.CHAT_BUBBLE_OUTLINE, color="#2563EB", size=18),
+            width=42, height=42, bgcolor="#EFF6FF", border_radius=12,
+            alignment=ft.Alignment(0, 0), ink=True,
+            on_click=lambda e, oid=order.get("id"), oname=customer_name, ostatus=status_val: page.run_task(page.push_route, f"/chat/{oid}?name={oname}&status={ostatus}"),
+        )
+
+        btn_row_controls = []
+
         if is_active:
-            action = ft.Container(
-                content=ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.LOCATION_SEARCHING, color="white", size=16),
-                        ft.Text("تتبع الطلب", size=13, color="white",
-                                weight=ft.FontWeight.BOLD),
-                    ],
-                    spacing=6, alignment=ft.MainAxisAlignment.CENTER,
-                ),
-                expand=True, height=42, bgcolor="#2563EB",
-                border_radius=12, alignment=ft.Alignment(0, 0), ink=True,
-                on_click=lambda e, oid=order.get("id"), oname=customer_name, ostatus=status_val, odate=created_at, ocost=total_cost: page.run_task(page.push_route, f"/track/{oid}?name={oname}&status={ostatus}&date={odate}&cost={ocost}"),
-            )
-            secondary = ft.Container(
-                content=ft.Icon(ft.Icons.CHAT_BUBBLE_OUTLINE, color="#2563EB", size=18),
-                width=42, height=42, bgcolor="#EFF6FF", border_radius=12,
-                alignment=ft.Alignment(0, 0), ink=True,
-                on_click=lambda e, oid=order.get("id"), oname=customer_name, ostatus=status_val: page.run_task(page.push_route, f"/chat/{oid}?name={oname}&status={ostatus}"),
-            )
+            btn_row_controls = [chat_btn_icon, track_btn_primary]
         elif is_done:
-            action = ft.Container(
+            reorder_btn = ft.Container(
                 content=ft.Row(
                     controls=[
                         ft.Icon(ft.Icons.REFRESH, color="#2563EB", size=16),
-                        ft.Text("إعادة الطلب", size=13, color="#2563EB",
-                                weight=ft.FontWeight.BOLD),
+                        ft.Text("إعادة الطلب", size=13, color="#2563EB", weight=ft.FontWeight.BOLD),
                     ],
                     spacing=6, alignment=ft.MainAxisAlignment.CENTER,
                 ),
                 expand=True, height=42, bgcolor="#EFF6FF",
                 border_radius=12, alignment=ft.Alignment(0, 0), ink=True,
             )
-            secondary = None
+            btn_row_controls = [track_btn_icon, reorder_btn]
         elif is_payment:
-            action = ft.Container(
+            pay_btn = ft.Container(
                 content=ft.Row(
                     controls=[
                         ft.Icon(ft.Icons.PAYMENT, color="white", size=16),
-                        ft.Text("ادفع الآن", size=13, color="white",
-                                weight=ft.FontWeight.BOLD),
+                        ft.Text("ادفع الآن", size=13, color="white", weight=ft.FontWeight.BOLD),
                     ],
                     spacing=6, alignment=ft.MainAxisAlignment.CENTER,
                 ),
                 expand=True, height=42, bgcolor="#2563EB",
                 border_radius=12, alignment=ft.Alignment(0, 0), ink=True,
             )
-            secondary = ft.Container(
+            delete_btn = ft.Container(
                 content=ft.Icon(ft.Icons.DELETE_OUTLINE, color="#F43F5E", size=18),
                 width=42, height=42, bgcolor="#FFF1F2", border_radius=12,
                 alignment=ft.Alignment(0, 0), ink=True,
             )
+            btn_row_controls = [delete_btn, track_btn_icon, pay_btn]
         else:
-            action = None
-            secondary = None
-
-        btn_row_controls = []
-        if secondary:
-            btn_row_controls.append(secondary)
-        if action:
-            btn_row_controls.append(action)
+            btn_row_controls = [track_btn_primary]
 
         return ft.Container(
             content=ft.Column(

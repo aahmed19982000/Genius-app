@@ -31,11 +31,14 @@ def chat_screen(page: ft.Page, order_id: int, order_name: str = "", order_status
 
     current_user_id = (api.user_data or {}).get("id")
 
-    async def on_file_pick(e: ft.FilePickerResultEvent):
-        if not e.files:
+    file_picker = ft.FilePicker()
+
+    async def handle_pick(e):
+        files = await file_picker.pick_files()
+        if not files:
             return
         
-        file_path = e.files[0].path
+        file_path = files[0].path
         send_loading.visible = True
         message_field.disabled = True
         page.update()
@@ -49,9 +52,6 @@ def chat_screen(page: ft.Page, order_id: int, order_name: str = "", order_status
             load_messages()
         else:
             page.update()
-
-    file_picker = ft.FilePicker(on_result=on_file_pick)
-    page.overlay.append(file_picker)
 
     # ── Helpers ──────────────────────────────────────────────────
 
@@ -470,7 +470,7 @@ def chat_screen(page: ft.Page, order_id: int, order_name: str = "", order_status
                     border_radius=14,
                     alignment=ft.Alignment(0, 0),
                     ink=True,
-                    on_click=lambda _: file_picker.pick_files(),
+                    on_click=handle_pick,
                 ),
             ],
             spacing=10,
