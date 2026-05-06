@@ -9,6 +9,9 @@ from screens.step1_upload import step1_upload_screen
 from screens.step2_options import step2_options_screen
 from screens.step3_quantity import step3_quantity_screen
 from screens.step4_payment import step4_payment_screen
+from screens.chat import chat_screen
+from screens.track_order import track_order_screen
+import urllib.parse
 
 from components.navbar import bottom_navbar
 
@@ -273,6 +276,42 @@ def main(page: ft.Page):
 
         elif route == "/profile":
             page.views.append(profile_screen(page))
+
+        elif route.startswith("/chat/"):
+            parsed_url = urllib.parse.urlparse(route)
+            path = parsed_url.path
+            query = urllib.parse.parse_qs(parsed_url.query)
+            
+            order_id_str = path.split("/")[-1]
+            try:
+                order_id = int(order_id_str)
+            except ValueError:
+                order_id = 0
+                
+            order_name = query.get("name", [""])[0]
+            order_status = query.get("status", [""])[0]
+            
+            page.views.append(chat_screen(page, order_id, order_name, order_status))
+
+        elif route.startswith("/track/"):
+            parsed_url = urllib.parse.urlparse(route)
+            path = parsed_url.path
+            query = urllib.parse.parse_qs(parsed_url.query)
+            
+            order_id_str = path.split("/")[-1]
+            try:
+                order_id = int(order_id_str)
+            except ValueError:
+                order_id = 0
+                
+            order_name = query.get("name", [""])[0]
+            order_status = query.get("status", [""])[0]
+            order_date = query.get("date", [""])[0]
+            order_cost = query.get("cost", ["0.00"])[0]
+            
+            page.views.append(track_order_screen(
+                page, order_id, order_name, order_status, order_date, order_cost
+            ))
 
         else:
             page.views.append(login_screen(page))

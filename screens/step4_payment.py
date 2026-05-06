@@ -270,7 +270,7 @@ def step4_payment_screen(page: ft.Page, order_data: dict, on_back):
                 ),
             ], spacing=0, expand=True),
         ],
-        navigation_bar=bottom_navbar(page, current_index=2),
+        navigation_bar=bottom_navbar(page, current_index=1),
         bgcolor="#f0f2f8",
         padding=0,
     )

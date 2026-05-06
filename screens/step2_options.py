@@ -102,7 +102,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                 ft.Text(f"{float(price):.2f} جنيه", size=10,
                         color="white" if is_sel else "#aaaaaa"),
             ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=2),
-            border=ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
+            border=ft.Border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
             border_radius=10,
             bgcolor="#1a237e" if is_sel else "white",
             padding=ft.Padding(6, 10, 6, 10),
@@ -119,7 +119,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         for k, btn in size_btns.items():
             is_sel = k == key
             btn.bgcolor = "#1a237e" if is_sel else "white"
-            btn.border  = ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd")
+            btn.border  = ft.Border.all(1.5, "#1a237e" if is_sel else "#dddddd")
             for col in btn.content.controls:
                 col.color = "white" if is_sel else ("#555555" if col.size == 14 else "#aaaaaa")
             try:
@@ -169,7 +169,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
             content=ft.Row([
                 ft.Container(
                     width=18, height=18, border_radius=9,
-                    border=ft.border.all(2, "#1a237e" if is_sel else "#dddddd"),
+                    border=ft.Border.all(2, "#1a237e" if is_sel else "#dddddd"),
                     bgcolor="#1a237e" if is_sel else "transparent",
                     content=ft.Icon("circle", size=8, color="white") if is_sel else None,
                     alignment=ft.Alignment(0, 0),
@@ -180,7 +180,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                     ft.Text(subtitle, size=11, color="#aaaaaa"),
                 ], spacing=2),
             ], spacing=8),
-            border=ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
+            border=ft.Border.all(1.5, "#1a237e" if is_sel else "#dddddd"),
             border_radius=12,
             padding=ft.Padding(12, 12, 12, 12),
             expand=True,
@@ -194,9 +194,9 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         selected_color["value"] = key
         for k, btn in color_cards.items():
             is_sel = k == key
-            btn.border = ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd")
+            btn.border = ft.Border.all(1.5, "#1a237e" if is_sel else "#dddddd")
             dot = btn.content.controls[0]
-            dot.border  = ft.border.all(2, "#1a237e" if is_sel else "#dddddd")
+            dot.border  = ft.Border.all(2, "#1a237e" if is_sel else "#dddddd")
             dot.bgcolor = "#1a237e" if is_sel else "transparent"
             dot.content = ft.Icon("circle", size=8, color="white") if is_sel else None
             try:
@@ -210,9 +210,9 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
         selected_sides["value"] = key
         for k, btn in sides_cards.items():
             is_sel = k == key
-            btn.border = ft.border.all(1.5, "#1a237e" if is_sel else "#dddddd")
+            btn.border = ft.Border.all(1.5, "#1a237e" if is_sel else "#dddddd")
             dot = btn.content.controls[0]
-            dot.border  = ft.border.all(2, "#1a237e" if is_sel else "#dddddd")
+            dot.border  = ft.Border.all(2, "#1a237e" if is_sel else "#dddddd")
             dot.bgcolor = "#1a237e" if is_sel else "transparent"
             dot.content = ft.Icon("circle", size=8, color="white") if is_sel else None
             try:
@@ -283,7 +283,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                 on_click=decrement, ink=True,
             ),
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-        border=ft.border.all(1.5, "#e0e0e0"),
+        border=ft.Border.all(1.5, "#e0e0e0"),
         border_radius=12,
         padding=ft.Padding(16, 10, 16, 10),
     )
@@ -408,7 +408,7 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                         ft.Container(
                             content=ft.Text("→ الخلف", size=14, color="#333333",
                                             weight=ft.FontWeight.BOLD),
-                            border=ft.border.all(1.5, "#dddddd"),
+                            border=ft.Border.all(1.5, "#dddddd"),
                             border_radius=14,
                             padding=ft.Padding(16, 13, 16, 13),
                             alignment=ft.Alignment(0, 0),
@@ -430,11 +430,11 @@ def step2_options_screen(page: ft.Page, file_info: dict, on_next, on_back):
                     ], spacing=10),
                     padding=ft.Padding(16, 12, 16, 12),
                     bgcolor="white",
-                    border=ft.border.only(top=ft.BorderSide(1, "#e8eaf0")),
+                    border=ft.Border.only(top=ft.BorderSide(1, "#e8eaf0")),
                 ),
             ], spacing=0, expand=True),
         ],
-        navigation_bar=bottom_navbar(page, current_index=2),
+        navigation_bar=bottom_navbar(page, current_index=1),
         bgcolor="#f0f2f8",
         padding=0,
     )
@@ -503,5 +503,5 @@ def _build_stepper(current: int):
         content=ft.Row(items, alignment=ft.MainAxisAlignment.CENTER),
         bgcolor="white",
         padding=ft.Padding(16, 14, 16, 14),
-        border=ft.border.only(bottom=ft.BorderSide(1, "#e8eaf0")),
+        border=ft.Border.only(bottom=ft.BorderSide(1, "#e8eaf0")),
     )

@@ -18,7 +18,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
     address_field = ft.TextField(
         hint_text="أدخل العنوان بالتفصيل (الحي، الشارع، رقم المبنى)",
         hint_style=ft.TextStyle(color="#aaaaaa", size=13),
-        border=ft.border.all(1, "#e0e0e0"),
+        border=ft.Border.all(1, "#e0e0e0"),
         border_radius=10,
         bgcolor="white",
         color="#222222",
@@ -31,7 +31,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
     notes_field = ft.TextField(
         hint_text="أضف أي تعليمات خاصة بالتغليف أو التوصيل هنا...",
         hint_style=ft.TextStyle(color="#aaaaaa", size=13),
-        border=ft.border.all(1, "#e0e0e0"),
+        border=ft.Border.all(1, "#e0e0e0"),
         border_radius=10,
         bgcolor="white",
         color="#222222",
@@ -90,7 +90,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
             bgcolor="#f0f2f8",
             border_radius=14,
             padding=ft.Padding(16, 16, 16, 16),
-            border=ft.border.all(1, "#e8eaf0"),
+            border=ft.Border.all(1, "#e8eaf0"),
         )
 
     update_totals()
@@ -157,7 +157,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
 
     back_btn = ft.Container(
         content=ft.Text("رجوع", size=14, color="#1a237e", weight=ft.FontWeight.BOLD),
-        border=ft.border.all(1.5, "#1a237e"),
+        border=ft.Border.all(1.5, "#1a237e"),
         border_radius=14, height=54,
         alignment=ft.Alignment(0, 0), expand=True,
         on_click=lambda e: on_back(), ink=True,
@@ -210,7 +210,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                                         ], spacing=0, tight=True),
                                         bgcolor="#f0f2f8", border_radius=14,
                                         padding=ft.Padding(16, 16, 16, 16),
-                                        border=ft.border.all(1, "#e8eaf0"),
+                                        border=ft.Border.all(1, "#e8eaf0"),
                                     ),
                                     ft.Container(height=12),
                                     ft.Container(
@@ -224,7 +224,7 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                                         ], spacing=0, tight=True),
                                         bgcolor="#f0f2f8", border_radius=14,
                                         padding=ft.Padding(16, 16, 16, 16),
-                                        border=ft.border.all(1, "#e8eaf0"),
+                                        border=ft.Border.all(1, "#e8eaf0"),
                                     ),
                                     ft.Container(height=16),
                                     summary_box,
@@ -247,14 +247,14 @@ def step3_quantity_screen(page: ft.Page, order_data: dict, on_next, on_back):
                         ], spacing=0),
                         padding=ft.Padding(16, 12, 16, 12),
                         bgcolor="white",
-                        border=ft.border.only(top=ft.BorderSide(1, "#e8eaf0")),
+                        border=ft.Border.only(top=ft.BorderSide(1, "#e8eaf0")),
                     ),
                 ],
                 spacing=0,
                 expand=True,
             ),
         ],
-        navigation_bar=bottom_navbar(page, current_index=2),
+        navigation_bar=bottom_navbar(page, current_index=1),
         bgcolor="#f0f2f8",
         padding=0,
     )
@@ -308,5 +308,5 @@ def _build_stepper(current: int):
         content=ft.Row(items, alignment=ft.MainAxisAlignment.CENTER),
         bgcolor="white",
         padding=ft.Padding(16, 14, 16, 14),
-        border=ft.border.only(bottom=ft.BorderSide(1, "#e8eaf0")),
+        border=ft.Border.only(bottom=ft.BorderSide(1, "#e8eaf0")),
     )

@@ -62,7 +62,7 @@ def dashboard_view(page: ft.Page):
                 bgcolor=role_color + "99",
                 border_radius=24,
                 alignment=ft.Alignment(0, 0),
-                border=ft.border.all(2, "white"),
+                border=ft.Border.all(2, "white"),
             ),
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         bgcolor=role_color,

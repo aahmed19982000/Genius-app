@@ -16,7 +16,7 @@ def login_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#AAAAAA"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     password_field = ft.TextField(
@@ -32,7 +32,7 @@ def login_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#AAAAAA"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     error_text = ft.Text(
@@ -118,7 +118,7 @@ def login_screen(page: ft.Page):
             width=80,
             height=56,
             alignment=ft.Alignment(0, 0),
-            border=ft.border.all(1, "#E8E8E8"),
+            border=ft.Border.all(1, "#E8E8E8"),
             ink=True,
             shadow=ft.BoxShadow(
                 blur_radius=8,
@@ -199,7 +199,7 @@ def login_screen(page: ft.Page):
                         # ── White card ────────────────────────
                         ft.Container(
                             margin=ft.margin.symmetric(horizontal=20),
-                            padding=ft.padding.symmetric(horizontal=24, vertical=32),
+                            padding=ft.Padding.symmetric(horizontal=24, vertical=32),
                             bgcolor="white",
                             border_radius=24,
                             shadow=ft.BoxShadow(

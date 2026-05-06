@@ -47,15 +47,9 @@ def bottom_navbar(page: ft.Page, current_index: int = 0):
             ),
             width=50,
             height=50,
-            bgcolor="#4169E1",
             shape=ft.BoxShape.CIRCLE,
             alignment=ft.Alignment(0, 0),
             on_click=lambda _: on_click(2),
-            shadow=ft.BoxShadow(
-                blur_radius=10,
-                color="#4169E140",
-                offset=ft.Offset(0, 4),
-            ),
             margin=ft.margin.only(bottom=15),
         )
 

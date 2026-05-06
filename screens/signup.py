@@ -14,7 +14,7 @@ def signup_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#666680"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     email_field = ft.TextField(
@@ -28,7 +28,7 @@ def signup_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#666680"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     password_field = ft.TextField(
@@ -44,7 +44,7 @@ def signup_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#666680"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     confirm_field = ft.TextField(
@@ -60,7 +60,7 @@ def signup_screen(page: ft.Page):
         hint_style=ft.TextStyle(color="#666680"),
         text_align=ft.TextAlign.RIGHT,
         height=56,
-        content_padding=ft.padding.symmetric(horizontal=16, vertical=16),
+        content_padding=ft.Padding.symmetric(horizontal=16, vertical=16),
     )
 
     error_text = ft.Text("", color="#FF4D4D", size=13, text_align=ft.TextAlign.CENTER)
@@ -133,7 +133,7 @@ def signup_screen(page: ft.Page):
         controls=[
             ft.Container(
                 expand=True,
-                padding=ft.padding.symmetric(horizontal=28, vertical=40),
+                padding=ft.Padding.symmetric(horizontal=28, vertical=40),
                 content=ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     spacing=0,

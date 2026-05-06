@@ -120,4 +120,45 @@ class APIClient:
             print(f"DEBUG: page count error = {e}")
         return 1
 
+
+    def get_order_chat(self, order_id: int):
+
+        try:
+            with httpx.Client(timeout=30) as client:
+                response = client.get(
+                    f"{self.ORDERS_URL}/{order_id}/chat/",
+                    headers={"Authorization": f"Bearer {self.access_token}"},
+                )
+            if response.status_code == 200:
+                return {"success": True, "data": response.json()}
+            return {"success": False, "message": "فشل تحميل الرسائل"}
+        except Exception as e:
+            return {"success": False, "message": f"تعذر الاتصال: {str(e)}"}
+
+    async def send_chat_message(self, order_id: int, message: str, file_path: str = None):
+        """إرسال رسالة في شات الطلب"""
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                data = {"message": message}
+                files = None
+
+                if file_path:
+                    with open(file_path, "rb") as f:
+                        file_bytes = f.read()
+                    files = {"file": (file_path.split("/")[-1], file_bytes)}
+
+                response = await client.post(
+                    f"{self.ORDERS_URL}/{order_id}/chat/",
+                    headers={"Authorization": f"Bearer {self.access_token}"},
+                    data=data,
+                    files=files,
+                )
+            if response.status_code == 201:
+                return {"success": True, "data": response.json()}
+            errors = response.json()
+            msg = list(errors.values())[0][0] if errors else "فشل إرسال الرسالة"
+            return {"success": False, "message": msg}
+        except Exception as e:
+            return {"success": False, "message": f"تعذر الاتصال: {str(e)}"}
+
 api = APIClient()
