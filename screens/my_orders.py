@@ -419,73 +419,74 @@ def my_orders_screen(page: ft.Page):
     return ft.View(
         route="/my-orders",
         controls=[
-            ft.Container(
+            ft.Column(
                 expand=True,
-                bgcolor="#F1F5F9",
-                content=ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=0,
-                    scroll=ft.ScrollMode.AUTO,
-                    controls=[
-                        # ── Header ──
-                        ft.Container(
-                            content=ft.Row(
-                                controls=[
-                                    ft.Container(
-                                        content=ft.Icon(ft.Icons.NOTIFICATIONS_NONE,
-                                                        color="#2563EB", size=22),
-                                        width=42, height=42,
-                                        bgcolor="white", border_radius=13,
-                                        border=ft.border.all(1, "#E2E8F0"),
-                                        alignment=ft.Alignment(0, 0),
-                                        shadow=ft.BoxShadow(blur_radius=6,
-                                                            color="#0A000000",
-                                                            offset=ft.Offset(0, 2)),
-                                    ),
-                                    ft.Column(
-                                        controls=[
-                                            ft.Text("طلباتي", size=22,
-                                                    weight=ft.FontWeight.BOLD,
-                                                    color="#0F172A", rtl=True),
-                                            ft.Text("تتبع جميع طلباتك هنا",
-                                                    size=12, color="#94A3B8", rtl=True),
-                                        ],
-                                        spacing=2,
-                                        horizontal_alignment=ft.CrossAxisAlignment.END,
-                                    ),
-                                ],
-                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=0,
+                controls=[
+                    ft.ListView(
+                        expand=True,
+                        padding=0,
+                        spacing=0,
+                        controls=[
+                            # ── Header ──
+                            ft.Container(
+                                content=ft.Row(
+                                    controls=[
+                                        ft.Container(
+                                            content=ft.Icon(ft.Icons.NOTIFICATIONS_NONE,
+                                                            color="#2563EB", size=22),
+                                            width=42, height=42,
+                                            bgcolor="white", border_radius=13,
+                                            border=ft.border.all(1, "#E2E8F0"),
+                                            alignment=ft.Alignment(0, 0),
+                                            shadow=ft.BoxShadow(blur_radius=6,
+                                                                color="#0A000000",
+                                                                offset=ft.Offset(0, 2)),
+                                        ),
+                                        ft.Column(
+                                            controls=[
+                                                ft.Text("طلباتي", size=22,
+                                                        weight=ft.FontWeight.BOLD,
+                                                        color="#0F172A", rtl=True),
+                                                ft.Text("تتبع جميع طلباتك هنا",
+                                                        size=12, color="#94A3B8", rtl=True),
+                                            ],
+                                            spacing=2,
+                                            horizontal_alignment=ft.CrossAxisAlignment.END,
+                                        ),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                ),
+                                padding=ft.Padding(left=20, right=20, top=20, bottom=16),
                             ),
-                            padding=ft.Padding(left=20, right=20, top=20, bottom=16),
-                        ),
 
-                        # ── Search ──
-                        ft.Container(
-                            content=search_bar,
-                            padding=ft.Padding(left=20, right=20, top=0, bottom=20),
-                        ),
+                            # ── Search ──
+                            ft.Container(
+                                content=search_bar,
+                                padding=ft.Padding(left=20, right=20, top=0, bottom=20),
+                            ),
 
-                        # ── Loading / Error ──
-                        ft.Container(
-                            content=loading,
-                            alignment=ft.Alignment(0, 0),
-                            padding=ft.Padding(left=0, right=0, top=20, bottom=20),
-                        ),
-                        ft.Container(
-                            content=error_text,
-                            padding=ft.Padding(left=20, right=20, top=0, bottom=0),
-                        ),
+                            # ── Loading / Error ──
+                            ft.Container(
+                                content=loading,
+                                alignment=ft.Alignment(0, 0),
+                                padding=ft.Padding(left=0, right=0, top=20, bottom=20),
+                            ),
+                            ft.Container(
+                                content=error_text,
+                                padding=ft.Padding(left=20, right=20, top=0, bottom=0),
+                            ),
 
-                        # ── Orders ──
-                        ft.Container(
-                            content=orders_list,
-                            padding=ft.Padding(left=20, right=20, top=0, bottom=24),
-                        ),
-
-                        bottom_navbar(page, current_index=1),
-                    ],
-                ),
+                            # ── Orders ──
+                            ft.Container(
+                                content=orders_list,
+                                padding=ft.Padding(left=20, right=20, top=0, bottom=24),
+                            ),
+                        ],
+                    ),
+                    bottom_navbar(page, current_index=1),
+                ],
             )
         ],
         bgcolor="#F1F5F9",

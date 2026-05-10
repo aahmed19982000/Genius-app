@@ -112,59 +112,62 @@ def profile_screen(page: ft.Page):
     return ft.View(
         route="/profile",
         controls=[
-            ft.Container(
+            ft.Column(
                 expand=True,
-                bgcolor="#F0F2F5",
-                content=ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=0,
-                    scroll=ft.ScrollMode.AUTO,
-                    controls=[
-                        # Header
-                        ft.Container(
-                            content=ft.Text(
-                                "الملف الشخصي",
+                spacing=0,
+                controls=[
+                    ft.ListView(
+                        expand=True,
+                        padding=0,
+                        spacing=0,
+                        controls=[
+                            # Header
+                            ft.Container(
+                                content=ft.Text(
+                                    "الملف الشخصي",
+                                    size=20,
+                                    weight=ft.FontWeight.BOLD,
+                                    color="#111111",
+                                    text_align=ft.TextAlign.CENTER,
+                                ),
+                                padding=ft.Padding(left=0, right=0, top=28, bottom=20),
+                                alignment=ft.Alignment(0, 0),
+                            ),
+
+                            # Avatar
+                            ft.Container(content=avatar, alignment=ft.Alignment(0, 0)),
+                            ft.Container(height=14),
+
+                            # Name & email
+                            ft.Text(
+                                user.get("username", "أحمد بن محمد"),
                                 size=20,
                                 weight=ft.FontWeight.BOLD,
                                 color="#111111",
                                 text_align=ft.TextAlign.CENTER,
                             ),
-                            padding=ft.Padding(left=0, right=0, top=28, bottom=20),
-                            alignment=ft.Alignment(0, 0),
-                        ),
+                            ft.Text(
+                                user.get("email", "ahmed.m@email.com"),
+                                size=13,
+                                color="#888888",
+                                text_align=ft.TextAlign.CENTER,
+                            ),
 
-                        # Avatar
-                        avatar,
-                        ft.Container(height=14),
+                            ft.Container(height=24),
 
-                        # Name & email
-                        ft.Text(
-                            user.get("username", "أحمد بن محمد"),
-                            size=20,
-                            weight=ft.FontWeight.BOLD,
-                            color="#111111",
-                        ),
-                        ft.Text(
-                            user.get("email", "ahmed.m@email.com"),
-                            size=13,
-                            color="#888888",
-                        ),
+                            # Main card
+                            main_card,
 
-                        ft.Container(height=24),
+                            ft.Container(height=14),
 
-                        # Main card
-                        main_card,
+                            # Logout card
+                            logout_card,
 
-                        ft.Container(height=14),
-
-                        # Logout card
-                        logout_card,
-
-                        ft.Container(height=24),
-
-                        bottom_navbar(page, current_index=4),
-                    ],
-                ),
+                            ft.Container(height=24),
+                        ],
+                    ),
+                    bottom_navbar(page, current_index=4),
+                ],
             )
         ],
         bgcolor="#F0F2F5",

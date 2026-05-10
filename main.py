@@ -5,6 +5,7 @@ from screens.signup import signup_screen
 from screens.home import home_screen
 from screens.my_orders import my_orders_screen
 from screens.profile import profile_screen
+from screens.wallet import wallet_screen
 from screens.step1_upload import step1_upload_screen
 from screens.step2_options import step2_options_screen
 from screens.step3_quantity import step3_quantity_screen
@@ -276,6 +277,9 @@ def main(page: ft.Page):
 
         elif route == "/profile":
             page.views.append(profile_screen(page))
+
+        elif route in ("/wallet", "/saved"):
+            page.views.append(wallet_screen(page))
 
         elif route.startswith("/chat/"):
             parsed_url = urllib.parse.urlparse(route)

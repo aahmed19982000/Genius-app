@@ -2,7 +2,7 @@ import flet as ft
 
 def bottom_navbar(page: ft.Page, current_index: int = 0):
     def on_click(index):
-        routes = ["/home", "/my-orders", "/step1", "/saved", "/profile"]
+        routes = ["/home", "/my-orders", "/step1", "/wallet", "/profile"]
         page.go(routes[index])
 
     def nav_item(icon_src, label, index, is_selected, is_image=True):
